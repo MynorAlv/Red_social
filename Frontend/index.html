@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mi Red Social - Iniciar sesión</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="header">
+    <h1 class="brand">Mi Red Social</h1>
+    <nav class="nav" id="nav"></nav>
+  </header>
+
+  <main>
+    <!-- Login -->
+    <section id="view-auth" class="card">
+      <h2>Bienvenido</h2>
+      <p class="muted">Inicia sesión para continuar</p>
+
+      <form id="form-login" class="form">
+        <label>Email
+          <input id="login-email" type="email" placeholder="tu@email.com" required />
+        </label>
+        <label class="input-affix">Contraseña
+          <input type="password" id="login-pass" placeholder="••••••" required />
+          <span class="toggle" onclick="togglePassword(this)">Ver</span>
+        </label>
+        <button id="btn-login" class="btn" type="submit">Entrar</button>
+      </form>
+
+      <!-- BOTÓN GOOGLE -->
+      <div style="text-align: center; margin-top: 1rem;">
+        <a href="/api/auth/google" class="btn btn-google" style="
+          display: inline-block;
+          margin-top: 10px;
+          padding: 10px 15px;
+          background: #fff;
+          color: #444;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          font-weight: bold;
+          text-decoration: none;
+          font-family: sans-serif;">
+          <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" style="width:18px; vertical-align: middle; margin-right: 8px;" />
+          Iniciar sesión con Google
+        </a>
+      </div>
+
+      <hr />
+      <p class="muted">¿No tienes cuenta?</p>
+      <a href="/register.html" class="btn btn-secondary">Registrarme</a>
+    </section>
+
+  
+    <!-- FEED -->
+<!-- === FEED tipo Instagram/Facebook === -->
+<section id="view-feed" class="feed-container hidden">
+  <div class="feed-header">
+    <h2>Publicaciones</h2>
+  </div>
+
+  <form id="form-post" class="post-form" enctype="multipart/form-data">
+    <div class="form-top">
+      <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png" alt="user" class="user-avatar">
+      <textarea
+        id="post-text"
+        name="text"
+        rows="2"
+        maxlength="500"
+        placeholder="¿Qué estás pensando?"
+      ></textarea>
+    </div>
+
+    <div class="form-actions">
+      <label class="file-label">
+        <input id="post-image" name="image" type="file" accept="image/*" hidden />
+        📸 Subir foto
+      </label>
+      <button type="submit" class="btn-post">Publicar</button>
+    </div>
+
+    <img id="post-preview" class="post-preview hidden" alt="preview" />
+    <span id="post-status" class="muted"></span>
+  </form>
+
+  <div id="feed-list" class="feed-list"></div>
+</section>
+
+<!-- Modal de imagen -->
+<div id="modal-viewer" onclick="hideModal()">
+  <img id="modal-img" src="" alt="Imagen ampliada" />
+</div>
+
+
+</section>
+
+
+    <!-- USUARIOS -->
+    <section id="view-users" class="card hidden">
+      <h2>Usuarios</h2>
+      <div id="users-list" class="list"></div>
+    </section>
+
+    <!-- PERFIL -->
+    <section id="view-profile" class="card hidden">
+      <h2>Mi perfil</h2>
+      <div id="profile-info" class="muted"></div>
+      <h3>Mis publicaciones</h3>
+      <div id="my-posts" class="list"></div>
+    </section>
+
+    <!-- MENSAJE -->
+    <section id="view-message" class="card hidden">
+      <pre id="message-box">...</pre>
+    </section>
+  </main>
+  <!-- === Modal para ver imagen completa === -->
+<div id="modal-viewer" onclick="hideModal()">
+  <img id="modal-img" src="" alt="Imagen ampliada" />
+</div>
+
+
+  <footer class="footer">
+    <small>© 2025 — Mi Red Social · API: <span id="api-base"></span></small>
+  </footer>
+
+  <script src="/js/app.js"></script>
+  
+</body>
+</html>

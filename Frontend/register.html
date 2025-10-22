@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Registrarme · Red Social</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="header">
+    <h1 class="brand">Mi Red Social</h1>
+    <nav class="nav">
+      <a href="index.html">Iniciar sesión</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Crear cuenta</h2>
+      <p class="muted">Completa los siguientes datos para registrarte.</p>
+
+      <form id="form-register" class="form">
+        <label>Nombre <input type="text" id="register-name" required /></label>
+        <label>Apellido <input type="text" id="register-surname" /></label>
+        <label>Nick <input type="text" id="register-nick" required /></label>
+        <label>Email <input type="email" id="register-email" required /></label>
+        <label>Contraseña <input type="password" id="register-pass" required /></label>
+        <button id="btn-register" class="btn btn-secondary" type="submit">Registrarme</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <small>© 2025 — Registro de usuario · API: <span id="api-base"></span></small>
+  </footer>
+
+  <script src="/js/register.js"></script>
+</body>
+</html>

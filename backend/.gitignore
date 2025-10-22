@@ -1,0 +1,12 @@
+# dependencias
+node_modules/
+# entornos
+.env
+# build y cache
+dist/
+build/
+.next/
+.vercel/
+# sistema
+.DS_Store
+*.log
