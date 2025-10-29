@@ -12,7 +12,19 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, trim: true },
   googleId: { type: String },
   role: { type: String, default: "role_user" },
-  image: { type: String, default: "default.png" },
+
+  // Imagen de perfil (avatar)
+  image: {
+    url: { type: String, default: "/uploads/avatars/default.png" },
+    public_id: { type: String, default: "" }, // útil si luego usas Cloudinary
+  },
+
+  //  Banner o portada del perfil
+  banner: {
+    url: { type: String, default: "/uploads/avatars/default-banner.jpg" },
+    public_id: { type: String, default: "" },
+  },
+
   createdAt: { type: Date, default: Date.now },
 });
 

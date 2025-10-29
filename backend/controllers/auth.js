@@ -18,7 +18,9 @@ exports.register = async (req, res) => {
   try {
     const { name, surname, nick, email, password } = req.body || {};
     if (!name || !nick || !email || !password) {
-      return res.status(400).json({ status: "error", message: "Faltan campos obligatorios" });
+      return res
+        .status(400)
+        .json({ status: "error", message: "Faltan campos obligatorios" });
     }
 
     const exists = await User.findOne({
@@ -55,7 +57,7 @@ exports.register = async (req, res) => {
       token,
     });
   } catch (err) {
-    console.error(err);
+    console.error("Error en registro:", err);
     return res.status(500).json({
       status: "error",
       message: "Error interno en el registro",
@@ -71,19 +73,27 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body || {};
     if (!email || !password) {
-      return res.status(400).json({ status: "error", message: "Email y contraseña son obligatorios" });
+      return res.status(400).json({
+        status: "error",
+        message: "Email y contraseña son obligatorios",
+      });
     }
 
     const user = await User.findOne({ email: norm(email).toLowerCase() });
     if (!user) {
-      return res.status(401).json({ status: "error", message: "Correo no registrado" });
+      return res
+        .status(401)
+        .json({ status: "error", message: "Correo no registrado" });
     }
 
     const ok = await bcrypt.compare(password, user.password);
     if (!ok) {
-      return res.status(401).json({ status: "error", message: "Contraseña incorrecta" });
+      return res
+        .status(401)
+        .json({ status: "error", message: "Contraseña incorrecta" });
     }
 
+    // 🔥 Genera token con id consistente
     const token = createToken(user);
     const { password: _, ...userSafe } = user.toObject();
 
@@ -94,7 +104,7 @@ exports.login = async (req, res) => {
       token,
     });
   } catch (err) {
-    console.error(err);
+    console.error("Error en login:", err);
     return res.status(500).json({
       status: "error",
       message: "Error interno en el login",
@@ -108,12 +118,18 @@ exports.login = async (req, res) => {
  */
 exports.profile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const userId = req.user.id || req.user._id;
+    const user = await User.findById(userId).select("-password");
+
     if (!user) {
-      return res.status(404).json({ status: "error", message: "Usuario no encontrado" });
+      return res
+        .status(404)
+        .json({ status: "error", message: "Usuario no encontrado" });
     }
+
     return res.json({ status: "success", user });
   } catch (err) {
+    console.error("Error obteniendo perfil:", err);
     return res.status(500).json({
       status: "error",
       message: "Error obteniendo perfil",

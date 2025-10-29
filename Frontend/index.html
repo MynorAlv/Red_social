@@ -13,7 +13,7 @@
   </header>
 
   <main>
-    <!-- Login -->
+    <!-- LOGIN -->
     <section id="view-auth" class="card">
       <h2>Bienvenido</h2>
       <p class="muted">Inicia sesión para continuar</p>
@@ -52,49 +52,43 @@
       <a href="/register.html" class="btn btn-secondary">Registrarme</a>
     </section>
 
-  
     <!-- FEED -->
-<!-- === FEED tipo Instagram/Facebook === -->
-<section id="view-feed" class="feed-container hidden">
-  <div class="feed-header">
-    <h2>Publicaciones</h2>
-  </div>
+    <section id="view-feed" class="feed-container hidden">
+      <div class="feed-header">
+        <h2>Publicaciones</h2>
+      </div>
 
-  <form id="form-post" class="post-form" enctype="multipart/form-data">
-    <div class="form-top">
-      <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png" alt="user" class="user-avatar">
-      <textarea
-        id="post-text"
-        name="text"
-        rows="2"
-        maxlength="500"
-        placeholder="¿Qué estás pensando?"
-      ></textarea>
+      <form id="form-post" class="post-form" enctype="multipart/form-data">
+        <div class="form-top">
+          <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png" alt="user" class="user-avatar">
+          <textarea
+            id="post-text"
+            name="text"
+            rows="2"
+            maxlength="500"
+            placeholder="¿Qué estás pensando?"
+          ></textarea>
+        </div>
+
+        <div class="form-actions">
+          <label class="file-label">
+            <input id="post-image" name="image" type="file" accept="image/*" hidden />
+            📸 Subir foto
+          </label>
+          <button type="submit" class="btn-post">Publicar</button>
+        </div>
+
+        <img id="post-preview" class="post-preview hidden" alt="preview" />
+        <span id="post-status" class="muted"></span>
+      </form>
+
+      <div id="feed-list" class="feed-list"></div>
+    </section>
+
+    <!-- MODAL DE IMAGEN -->
+    <div id="modal-viewer" onclick="hideModal()">
+      <img id="modal-img" src="" alt="Imagen ampliada" />
     </div>
-
-    <div class="form-actions">
-      <label class="file-label">
-        <input id="post-image" name="image" type="file" accept="image/*" hidden />
-        📸 Subir foto
-      </label>
-      <button type="submit" class="btn-post">Publicar</button>
-    </div>
-
-    <img id="post-preview" class="post-preview hidden" alt="preview" />
-    <span id="post-status" class="muted"></span>
-  </form>
-
-  <div id="feed-list" class="feed-list"></div>
-</section>
-
-<!-- Modal de imagen -->
-<div id="modal-viewer" onclick="hideModal()">
-  <img id="modal-img" src="" alt="Imagen ampliada" />
-</div>
-
-
-</section>
-
 
     <!-- USUARIOS -->
     <section id="view-users" class="card hidden">
@@ -103,29 +97,49 @@
     </section>
 
     <!-- PERFIL -->
-    <section id="view-profile" class="card hidden">
-      <h2>Mi perfil</h2>
-      <div id="profile-info" class="muted"></div>
-      <h3>Mis publicaciones</h3>
-      <div id="my-posts" class="list"></div>
-    </section>
+    <section id="view-profile" class="feed-container hidden">
+  <div class="profile-header">
+    <div class="profile-banner">
+      <img src="https://images.unsplash.com/photo-1517511620798-cec17d428bc0?auto=format&fit=crop&w=1000&q=80" alt="banner" />
+    </div>
 
-    <!-- MENSAJE -->
+    <div class="profile-info">
+      <div class="profile-avatar">
+        <img src="https://cdn-icons-png.flaticon.com/512/1946/1946429.png" alt="avatar" id="profile-avatar-img" />
+      </div>
+      <h2 id="profile-name">Mi Perfil</h2>
+      <p id="profile-email" class="muted"></p>
+    </div>
+  </div>
+
+  <div class="feed-header" style="margin-top: 30px;">
+    <h3>Mis publicaciones</h3>
+  </div>
+
+  <div id="my-posts" class="feed-list"></div>
+</section>
+
+
+
+
+    <!-- MENSAJES -->
     <section id="view-message" class="card hidden">
       <pre id="message-box">...</pre>
     </section>
   </main>
-  <!-- === Modal para ver imagen completa === -->
-<div id="modal-viewer" onclick="hideModal()">
-  <img id="modal-img" src="" alt="Imagen ampliada" />
-</div>
-
 
   <footer class="footer">
     <small>© 2025 — Mi Red Social · API: <span id="api-base"></span></small>
   </footer>
 
-  <script src="/js/app.js"></script>
-  
+  <!-- === IMPORTAR MÓDULOS JS === -->
+ <script src="/js/utils.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/feed.js"></script>
+<script src="/js/users.js"></script> 
+<script src="/js/modal.js"></script>
+<script src="/js/app.js"></script>
+
 </body>
 </html>

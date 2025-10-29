@@ -14,10 +14,13 @@ const app = express();
 const puerto = 3900;
 
 // Middleware CORS
+
 app.use(cors({
-  origin: "http://localhost:3900",
-  credentials: true
+  origin: "*", // Permite cualquier origen (ajusta más adelante si deseas)
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
 
 // Body-parser
 app.use(express.json());

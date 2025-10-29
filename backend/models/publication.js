@@ -1,13 +1,20 @@
-// /models/publication.js
+// ===============================
+// models/publication.js
+// ===============================
+
 const mongoose = require("mongoose");
 
-const PublicationSchema = new mongoose.Schema({
-  text: { type: String, trim: true, maxlength: 500 },
-  image: {
-    url: { type: String },
+const PublicationSchema = new mongoose.Schema(
+  {
+    text: { type: String, trim: true },
+    image: {
+      url: { type: String, default: "" },
+      public_id: { type: String, default: "" },
+    },
+    // ✅ Relación correcta con el modelo User
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  createdAt: { type: Date, default: Date.now },
-});
+  { timestamps: true }
+);
 
 module.exports = mongoose.model("Publication", PublicationSchema);
