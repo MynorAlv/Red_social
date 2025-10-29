@@ -1,13 +1,10 @@
-// ===============================
 // controllers/publication.js
-// ===============================
 const Publication = require("../models/publication");
 const mongoose = require("mongoose");
 const s3 = require("../config/s3"); // conexión con AWS S3
 
-// ===============================
+
 // Crear publicación
-// ===============================
 exports.create = async (req, res) => {
   try {
     const text = (req.body?.text || "").trim();

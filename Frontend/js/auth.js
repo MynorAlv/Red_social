@@ -86,3 +86,18 @@ $("form-login")?.addEventListener("submit", async (e) => {
     }
   }
 });
+// =================== MOSTRAR / OCULTAR CONTRASEÑA ===================
+function togglePassword(el) {
+  // Obtener el input del mismo label
+  const input = el.parentElement.querySelector("input");
+  if (!input) return;
+
+  // Alternar tipo de input y texto del botón
+  if (input.type === "password") {
+    input.type = "text";
+    el.textContent = "Ocultar";
+  } else {
+    input.type = "password";
+    el.textContent = "Ver";
+  }
+}

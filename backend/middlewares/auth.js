@@ -1,7 +1,4 @@
-// ===============================
 // middlewares/auth.js
-// ===============================
-
 const jwt = require("jwt-simple");
 const moment = require("moment");
 const { claveSecreta } = require("../services/jwt");
@@ -12,9 +9,8 @@ const { claveSecreta } = require("../services/jwt");
  * y agrega los datos del usuario en req.user.
  */
 exports.auth = (req, res, next) => {
-  // ===============================
+
   // 1️⃣ Verificar cabecera Authorization
-  // ===============================
   const authHeader = req.headers.authorization;
   if (!authHeader) {
     return res.status(403).json({

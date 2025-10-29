@@ -1,4 +1,4 @@
-// =================== USERS & PROFILE ===================
+//  USERS & PROFILE 
 
 // Cargar lista de usuarios
 async function loadUsers() {
@@ -37,7 +37,7 @@ function renderUsers() {
 
   for (const u of state.users) {
     const li = document.createElement("div");
-    li.className = "item";
+    li.className = "user-card";
 
     const uName = u.nick || u.username || u.name || "(sin nombre)";
     const isMe =
@@ -46,15 +46,27 @@ function renderUsers() {
         (u.id && u.id === state.me.id) ||
         u.email?.toLowerCase() === state.me.email?.toLowerCase());
 
+    // Imagen de usuario
+    const avatar =
+      typeof u.image === "string"
+        ? u.image
+        : u.image?.url || "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
+
     li.innerHTML = `
-      <div class="meta">
-        <strong>${uName}</strong> ${isMe ? "· tú" : ""}
+      <div class="user-info">
+        <img src="${avatar}" alt="avatar" class="user-avatar" 
+             onerror="this.src='https://cdn-icons-png.flaticon.com/512/1946/1946429.png'">
+        <div>
+          <div class="user-name">${uName}${isMe ? ' <span class="badge">Tú</span>' : ""}</div>
+          <div class="user-email">${u.email || ""}</div>
+        </div>
       </div>
-      <div class="text">${u.email || ""}</div>
     `;
+
     wrap.appendChild(li);
   }
 }
+
 
 // Cargar publicaciones del usuario autenticado
 async function loadMyPosts() {
@@ -222,13 +234,26 @@ document.getElementById("profile-avatar-img")?.addEventListener("click", () => {
       const data = await res.json();
 
       if (data.status === "success") {
-        const refreshed = await apiGet("/api/users/me");
-        state.me = refreshed.user || refreshed;
+        // 🔄 Obtener de nuevo los datos actualizados desde el backend
+        const refreshedRes = await fetch("/api/users/me", {
+          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+        });
+        const refreshedData = await refreshedRes.json();
+
+        // Guardar nueva información del usuario
+        state.me = refreshedData.user || refreshedData;
+        localStorage.setItem("user", JSON.stringify(state.me));
+
+        // Refrescar vistas
         renderProfile();
+        document.dispatchEvent(new Event("avatarUpdated"));
+
         toast("Foto de perfil actualizada correctamente");
-      } else toast("Error al actualizar avatar", false);
+      } else {
+        toast("Error al actualizar avatar", false);
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Error subiendo avatar:", err);
       toast("Error al subir avatar", false);
     }
   };
@@ -256,13 +281,22 @@ document.querySelector(".profile-banner img")?.addEventListener("click", () => {
       const data = await res.json();
 
       if (data.status === "success") {
-        const refreshed = await apiGet("/api/users/me");
-        state.me = refreshed.user || refreshed;
+        // 🔄 Refrescar desde el backend para garantizar actualización
+        const refreshedRes = await fetch("/api/users/me", {
+          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+        });
+        const refreshedData = await refreshedRes.json();
+
+        state.me = refreshedData.user || refreshedData;
+        localStorage.setItem("user", JSON.stringify(state.me));
+
         renderProfile();
         toast("Portada actualizada correctamente");
-      } else toast("Error al actualizar portada", false);
+      } else {
+        toast("Error al actualizar portada", false);
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Error subiendo portada:", err);
       toast("Error al subir portada", false);
     }
   };

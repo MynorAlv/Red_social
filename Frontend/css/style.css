@@ -139,32 +139,6 @@ body {
   }
 }
 
-.input-affix {
-  position: relative;
-  display: grid;
-  gap: 6px;
-}
-.input-affix input {
-  padding-right: 50px;
-}
-.input-affix .toggle {
-  position: absolute;
-  top: 50%;
-  right: 12px;
-  transform: translateY(-50%);
-  background: #f3f4f6;
-  border: 1px solid var(--border);
-  color: #374151;
-  border-radius: 8px;
-  padding: 4px 8px;
-  font-size: 12px;
-  cursor: pointer;
-  line-height: 1;
-}
-.input-affix .toggle:hover {
-  background: #e5e7eb;
-}
-
 .actions {
   display: flex;
   align-items: center;
@@ -643,4 +617,102 @@ textarea#post-text {
   height: 48px;
   border-radius: 50%;
   object-fit: cover;
+}
+.input-affix {
+  position: relative;
+  display: block;
+}
+
+.input-affix input {
+  width: 100%;
+  padding: 12px 80px 12px 14px;
+  border: 1.8px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 15px;
+  background: #fff;
+  color: #111;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-affix input:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.35);
+}
+
+.input-affix .toggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #1e3a8a;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.input-affix .toggle:hover {
+  background: #e0e7ff;
+  border-color: #bfdbfe;
+}
+
+/* === Tarjetas de Usuarios === */
+.user-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: all 0.2s ease-in-out;
+  cursor: default;
+}
+
+.user-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e5e7eb;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: #111827;
+}
+
+.user-email {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.badge {
+  display: inline-block;
+  background: #2563eb;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin-left: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }

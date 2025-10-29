@@ -1,13 +1,10 @@
-// ===============================
 // controllers/user.js
-// ===============================
 const User = require("../models/user");
 const s3 = require("../config/s3");
 const { DeleteObjectCommand } = require("@aws-sdk/client-s3");
 
-// ===============================
+
 // LISTAR TODOS LOS USUARIOS
-// ===============================
 exports.listAll = async (req, res) => {
   try {
     const users = await User.find().select("-password").sort({ createdAt: -1 });
@@ -21,9 +18,8 @@ exports.listAll = async (req, res) => {
   }
 };
 
-// ===============================
+
 // OBTENER USUARIO POR ID
-// ===============================
 exports.getById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-password");

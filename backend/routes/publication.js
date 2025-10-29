@@ -1,6 +1,4 @@
-// ===============================
 // routes/publication.js
-// ===============================
 const express = require("express");
 const router = express.Router();
 const path = require("path");
@@ -10,7 +8,6 @@ const s3 = require("../config/s3");
 const { auth } = require("../middlewares/auth");
 const PublicationController = require("../controllers/publication");
 
-// === Configuración de almacenamiento en S3 (sin ACLs) ===
 const upload = multer({
   storage: multerS3({
     s3,

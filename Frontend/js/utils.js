@@ -1,4 +1,4 @@
-// =================== UTILS ===================
+// UTILS 
 const $ = (id) => document.getElementById(id);
 const show = (id) => $(id)?.classList.remove("hidden");
 const hide = (id) => $(id)?.classList.add("hidden");

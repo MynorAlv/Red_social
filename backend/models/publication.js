@@ -1,7 +1,4 @@
-// ===============================
 // models/publication.js
-// ===============================
-
 const mongoose = require("mongoose");
 
 const PublicationSchema = new mongoose.Schema(
@@ -11,7 +8,7 @@ const PublicationSchema = new mongoose.Schema(
       url: { type: String, default: "" },
       public_id: { type: String, default: "" },
     },
-    // ✅ Relación correcta con el modelo User
+    // Relación correcta con el modelo User
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }

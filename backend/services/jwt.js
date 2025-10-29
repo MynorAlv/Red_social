@@ -1,23 +1,19 @@
-// ===============================
+
 // services/jwt.js
-// ===============================
 
 // Dependencias
 const jwt = require("jwt-simple");
 const moment = require("moment");
 
-// ===============================
-// 🔐 Clave secreta del proyecto
-// ===============================
+// Clave secreta del proyecto
 // Usa una variable de entorno en producción para mayor seguridad.
 // Si no existe, usa esta por defecto.
 const claveSecreta =
   process.env.JWT_SECRET ||
   "CLAVE_SECRETA_del_proyecto_DE_LA_RED_soCIAL_987987";
 
-// ===============================
-// 🧩 Crear token JWT
-// ===============================
+//  Crear token JWT
+
 /**
  * Genera un token JWT con los datos esenciales del usuario.
  * Este formato unificado permite usar el mismo token para:
@@ -30,7 +26,7 @@ const claveSecreta =
 const createToken = (user) => {
   // Siempre aseguramos que el token tenga un campo "id" válido
   const payload = {
-    id: user._id?.toString?.() || user.id, // 🔥 id consistente
+    id: user._id?.toString?.() || user.id, 
     name: user.name || "",
     surname: user.surname || "",
     nick: user.nick || "",

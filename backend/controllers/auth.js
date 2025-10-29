@@ -1,7 +1,4 @@
-// ===============================
 // controllers/auth.js
-// ===============================
-
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const { createToken } = require("../services/jwt");

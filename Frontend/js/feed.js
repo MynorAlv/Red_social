@@ -1,5 +1,6 @@
 // =================== FEED ===================
 
+// PREVIEW DE IMAGEN EN EL FORMULARIO 
 const postImg = $("post-image");
 const postPreview = $("post-preview");
 
@@ -16,10 +17,11 @@ if (postImg && postPreview) {
   });
 }
 
+// === CARGAR FEED ===
 async function loadFeed() {
   try {
     const data = await apiGet(API_PUB.list);
-    state.feed = data.publications || [];
+    state.feed = data.publications || data.items || data || [];
     renderFeed();
   } catch (e) {
     state.feed = [];
@@ -28,6 +30,7 @@ async function loadFeed() {
   }
 }
 
+// === RENDERIZAR PUBLICACIONES ===
 function renderFeed() {
   const wrap = $("feed-list");
   if (!wrap) return;
@@ -42,21 +45,35 @@ function renderFeed() {
     const author = p.user?.nick || "Anónimo";
     const when = p.createdAt ? new Date(p.createdAt).toLocaleString() : "";
     const text = (p.text || "").replace(/</g, "&lt;");
-    const imgUrl = p.image?.url || null;
-    const avatar = p.user?.image?.url || "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
+    const imgUrl = p.image?.url
+      ? p.image.url
+      : typeof p.image === "string" && p.image.startsWith("http")
+      ? p.image
+      : null;
+
+    // Avatar del usuario
+    let avatarUrl =
+      p.user?.image?.url || p.user?.image ||
+      "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
 
     const card = document.createElement("div");
     card.className = "post-card";
 
     card.innerHTML = `
       <div class="post-header">
-        <img src="${avatar}" alt="avatar" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1946/1946429.png'">
+        <img src="${avatarUrl}" alt="avatar"
+             onerror="this.src='https://cdn-icons-png.flaticon.com/512/1946/1946429.png'">
         <div>
           <div class="post-user">${author}</div>
           <div class="post-date">${when}</div>
         </div>
       </div>
-      ${imgUrl ? `<img src="${imgUrl}" class="post-image" onclick="showModal('${imgUrl}')">` : ""}
+      ${
+        imgUrl
+          ? `<img src="${imgUrl}" class="post-image" onclick="showModal('${imgUrl}')" 
+                 onerror="this.style.display='none'">`
+          : ""
+      }
       ${text ? `<div class="post-text">${text}</div>` : ""}
       <div class="post-actions">
         <span>❤️ Me gusta</span>
@@ -66,8 +83,12 @@ function renderFeed() {
     `;
     wrap.appendChild(card);
   }
+
+  // Actualizar el avatar del formulario superior (usuario actual)
+  updateCurrentUserAvatarInFeed();
 }
 
+// === PUBLICAR NUEVO POST ===
 $("form-post")?.addEventListener("submit", async (e) => {
   e.preventDefault();
   const text = $("post-text")?.value.trim();
@@ -92,6 +113,7 @@ $("form-post")?.addEventListener("submit", async (e) => {
     await res.json();
     await loadFeed();
 
+    // limpiar preview y texto
     if (postPreview) {
       postPreview.src = "";
       postPreview.classList.add("hidden");
@@ -107,3 +129,31 @@ $("form-post")?.addEventListener("submit", async (e) => {
     if (status) setTimeout(() => (status.textContent = ""), 1500);
   }
 });
+
+// === ACTUALIZAR AVATAR DEL USUARIO ACTUAL EN EL FEED ===
+function updateCurrentUserAvatarInFeed() {
+  const avatarImg = document.querySelector(".post-form .user-avatar");
+  if (!avatarImg || !state.me) return;
+
+  let avatarUrl = "";
+
+  if (state.me.image) {
+    if (typeof state.me.image === "string") {
+      avatarUrl = state.me.image;
+    } else if (state.me.image.url) {
+      avatarUrl = state.me.image.url;
+    }
+  }
+
+  avatarImg.src =
+    avatarUrl && avatarUrl.startsWith("http")
+      ? avatarUrl
+      : "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
+
+  avatarImg.onerror = () => {
+    avatarImg.src = "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
+  };
+}
+
+// Llamar también cuando se cambie la foto de perfil
+document.addEventListener("avatarUpdated", updateCurrentUserAvatarInFeed);

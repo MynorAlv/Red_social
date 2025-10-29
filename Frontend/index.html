@@ -22,10 +22,12 @@
         <label>Email
           <input id="login-email" type="email" placeholder="tu@email.com" required />
         </label>
-        <label class="input-affix">Contraseña
-          <input type="password" id="login-pass" placeholder="••••••" required />
-          <span class="toggle" onclick="togglePassword(this)">Ver</span>
-        </label>
+        <label for="login-pass">Contraseña</label>
+        <div class="input-affix">
+        <input type="password" id="login-pass" placeholder="••••••" required />
+        <span class="toggle" onclick="togglePassword(this)">Ver</span>
+        </div>
+
         <button id="btn-login" class="btn" type="submit">Entrar</button>
       </form>
 
