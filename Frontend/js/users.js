@@ -1,4 +1,4 @@
-//  USERS & PROFILE 
+// =================== USERS & PROFILE ===================
 
 // Cargar lista de usuarios
 async function loadUsers() {
@@ -46,7 +46,6 @@ function renderUsers() {
         (u.id && u.id === state.me.id) ||
         u.email?.toLowerCase() === state.me.email?.toLowerCase());
 
-    // Imagen de usuario
     const avatar =
       typeof u.image === "string"
         ? u.image
@@ -54,7 +53,7 @@ function renderUsers() {
 
     li.innerHTML = `
       <div class="user-info">
-        <img src="${avatar}" alt="avatar" class="user-avatar" 
+        <img src="${avatar}" alt="avatar" class="user-avatar"
              onerror="this.src='https://cdn-icons-png.flaticon.com/512/1946/1946429.png'">
         <div>
           <div class="user-name">${uName}${isMe ? ' <span class="badge">Tú</span>' : ""}</div>
@@ -63,12 +62,23 @@ function renderUsers() {
       </div>
     `;
 
+    // Al hacer clic, ir a su perfil
+    li.addEventListener("click", () => {
+      if (isMe) {
+        location.hash = "#/profile";
+      } else {
+        location.hash = `#/profile/${u._id}`;
+      }
+      route();
+    });
+
     wrap.appendChild(li);
   }
 }
 
-
-// Cargar publicaciones del usuario autenticado
+// ===============================
+// PERFIL PERSONAL (MI PERFIL)
+// ===============================
 async function loadMyPosts() {
   try {
     const token = localStorage.getItem("token");
@@ -85,143 +95,143 @@ async function loadMyPosts() {
         p.user === myId
     );
 
-    renderProfile();
+    renderProfile(true); // <- true indica que es tu perfil
   } catch (e) {
     console.error("Error cargando publicaciones propias:", e);
     state.myPosts = [];
-    renderProfile();
+    renderProfile(true);
   }
 }
 
 // ===============================
-// RENDERIZAR PERFIL PERSONAL
+// RENDERIZAR PERFIL (GENÉRICO)
 // ===============================
-function renderProfile() {
+function renderProfile(isOwnProfile = false, user = state.me, posts = state.myPosts) {
   const nameEl = $("profile-name");
   const emailEl = $("profile-email");
   const avatarEl = $("profile-avatar-img");
   const bannerEl = document.querySelector(".profile-banner img");
   const wrap = $("my-posts");
 
-  if (state.me) {
-    // Nombre y correo
-    if (nameEl) nameEl.textContent = state.me.nick || state.me.name || "Usuario";
-    if (emailEl) emailEl.textContent = state.me.email || "";
+  if (!user) return;
 
-    // Avatar (manejar string u objeto)
-    if (avatarEl) {
-      let avatarUrl = "";
+  // Nombre y correo
+  if (nameEl) nameEl.textContent = user.nick || user.name || "Usuario";
+  if (emailEl) emailEl.textContent = user.email || "";
 
-      if (state.me.image) {
-        if (typeof state.me.image === "string") {
-          avatarUrl = state.me.image;
-        } else if (state.me.image.url) {
-          avatarUrl = state.me.image.url;
-        }
-      }
+  // Avatar
+  const avatarUrl =
+    typeof user.image === "string"
+      ? user.image
+      : user.image?.url || "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
 
-      if (!avatarUrl && state.me?.user?.image?.url) {
-        avatarUrl = state.me.user.image.url;
-      }
+  // Banner
+  const bannerUrl =
+    typeof user.banner === "string"
+      ? user.banner
+      : user.banner?.url ||
+        "https://images.unsplash.com/photo-1517511620798-cec17d428bc0?auto=format&fit=crop&w=1000&q=80";
 
-      avatarEl.src =
-        avatarUrl && avatarUrl.startsWith("http")
-          ? avatarUrl
-          : "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
+  if (avatarEl) {
+    avatarEl.src = avatarUrl;
+    avatarEl.onerror = () =>
+      (avatarEl.src = "https://cdn-icons-png.flaticon.com/512/1946/1946429.png");
+    avatarEl.style.cursor = isOwnProfile ? "pointer" : "default";
+    avatarEl.onclick = isOwnProfile ? handleAvatarChange : null;
+  }
 
-      avatarEl.onerror = () => {
-        avatarEl.src = "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
-      };
-    }
-
-    // Banner (manejar string u objeto)
-    if (bannerEl) {
-      let bannerUrl = "";
-
-      if (state.me.banner) {
-        if (typeof state.me.banner === "string") {
-          bannerUrl = state.me.banner;
-        } else if (state.me.banner.url) {
-          bannerUrl = state.me.banner.url;
-        }
-      }
-
-      if (!bannerUrl && state.me?.user?.banner?.url) {
-        bannerUrl = state.me.user.banner.url;
-      }
-
-      bannerEl.src =
-        bannerUrl && bannerUrl.startsWith("http")
-          ? bannerUrl
-          : "https://images.unsplash.com/photo-1517511620798-cec17d428bc0?auto=format&fit=crop&w=1000&q=80";
-
-      bannerEl.onerror = () => {
-        bannerEl.src =
-          "https://images.unsplash.com/photo-1517511620798-cec17d428bc0?auto=format&fit=crop&w=1000&q=80";
-      };
-    }
+  if (bannerEl) {
+    bannerEl.src = bannerUrl;
+    bannerEl.onerror = () =>
+      (bannerEl.src =
+        "https://images.unsplash.com/photo-1517511620798-cec17d428bc0?auto=format&fit=crop&w=1000&q=80");
+    bannerEl.style.cursor = isOwnProfile ? "pointer" : "default";
+    bannerEl.onclick = isOwnProfile ? handleBannerChange : null;
   }
 
   if (!wrap) return;
   wrap.innerHTML = "";
 
-  if (!state.myPosts?.length) {
-    wrap.innerHTML = `<p class="muted">Aún no has publicado nada.</p>`;
+  if (!posts?.length) {
+    wrap.innerHTML = `<p class="muted">${isOwnProfile ? "Aún no has publicado nada." : "Este usuario aún no ha publicado nada."}</p>`;
     return;
   }
 
-  // Renderizar publicaciones del usuario
-  for (const p of state.myPosts) {
-    const author = p.user?.nick || state.me?.nick || "Yo";
-    const when = p.createdAt ? new Date(p.createdAt).toLocaleString() : "";
-    const text = (p.text || "").replace(/</g, "&lt;");
+  for (const p of posts) {
+  const when = p.createdAt ? new Date(p.createdAt).toLocaleString() : "";
+  const text = (p.text || "").replace(/</g, "&lt;");
+  const imgUrl = typeof p.image === "string" ? p.image : p.image?.url || null;
 
-    let imgUrl = null;
-    if (p.image?.url) {
-      imgUrl = p.image.url;
-    } else if (typeof p.image === "string" && p.image.trim() !== "") {
-      imgUrl = p.image;
+  const card = document.createElement("div");
+  card.className = "post-card";
+  card.innerHTML = `
+    <div class="post-header">
+      <img src="${avatarUrl}" alt="avatar">
+      <div>
+        <div class="post-user">${user.nick || user.name}</div>
+        <div class="post-date">${when}</div>
+      </div>
+    </div>
+    ${imgUrl ? `<img src="${imgUrl}" class="post-image">` : ""}
+    ${
+      p.descripcion_ia
+        ? `<div class="ia-label"><strong>Detectado:</strong> ${p.descripcion_ia}</div>`
+        : ""
     }
+    ${
+      p.emocion_ia
+        ? `<div class="ia-emocion"><strong>Emoción:</strong> ${p.emocion_ia}</div>`
+        : ""
+    }
+    ${text ? `<div class="post-text">${text}</div>` : ""}
+    <div class="post-actions">
+      <span>❤️ Me gusta</span>
+      <span>💬 Comentar</span>
+      <span>↗️ Compartir</span>
+    </div>
+  `;
+  wrap.appendChild(card);
+}
 
-    const card = document.createElement("div");
-    card.className = "post-card";
+}
 
-    card.innerHTML = `
-      <div class="post-header">
-        <img src="${avatarEl?.src}" alt="avatar" 
-             onerror="this.src='https://cdn-icons-png.flaticon.com/512/1946/1946429.png'">
-        <div>
-          <div class="post-user">${author}</div>
-          <div class="post-date">${when}</div>
-        </div>
-      </div>
-      ${
-        imgUrl
-          ? `<img src="${imgUrl}" class="post-image" onclick="showModal('${imgUrl}')" onerror="this.style.display='none'">`
-          : ""
-      }
-      ${text ? `<div class="post-text">${text}</div>` : ""}
-      <div class="post-actions">
-        <span>❤️ Me gusta</span>
-        <span>💬 Comentar</span>
-        <span>↗️ Compartir</span>
-      </div>
-    `;
-    wrap.appendChild(card);
+// ===============================
+// PERFIL PÚBLICO DE OTRO USUARIO
+// ===============================
+async function loadPublicProfile(userId) {
+  try {
+    const token = localStorage.getItem("token");
+    const [userRes, postsRes] = await Promise.all([
+      fetch(`/api/users/${userId}`, {
+        headers: { Authorization: "Bearer " + token },
+      }),
+      fetch(`/api/publications`, {
+        headers: { Authorization: "Bearer " + token },
+      }),
+    ]);
+
+    const userData = await userRes.json();
+    const postsData = await postsRes.json();
+
+    const user = userData.user;
+    const allPosts = postsData.publications || [];
+    const userPosts = allPosts.filter((p) => p.user?._id === userId);
+
+    renderProfile(false, user, userPosts); // <- falso indica que no es tu perfil
+  } catch (err) {
+    console.error("Error cargando perfil público:", err);
+    toast("No se pudo cargar el perfil del usuario", false);
   }
 }
 
 // =================== CAMBIAR AVATAR Y BANNER ===================
-
-// Subir nuevo avatar
-document.getElementById("profile-avatar-img")?.addEventListener("click", () => {
+async function handleAvatarChange() {
   const input = document.createElement("input");
   input.type = "file";
   input.accept = "image/*";
   input.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const fd = new FormData();
     fd.append("avatar", file);
 
@@ -232,43 +242,31 @@ document.getElementById("profile-avatar-img")?.addEventListener("click", () => {
         body: fd,
       });
       const data = await res.json();
-
       if (data.status === "success") {
-        // 🔄 Obtener de nuevo los datos actualizados desde el backend
-        const refreshedRes = await fetch("/api/users/me", {
+        const refreshed = await fetch("/api/users/me", {
           headers: { Authorization: "Bearer " + localStorage.getItem("token") },
         });
-        const refreshedData = await refreshedRes.json();
-
-        // Guardar nueva información del usuario
+        const refreshedData = await refreshed.json();
         state.me = refreshedData.user || refreshedData;
         localStorage.setItem("user", JSON.stringify(state.me));
-
-        // Refrescar vistas
-        renderProfile();
-        document.dispatchEvent(new Event("avatarUpdated"));
-
+        renderProfile(true);
         toast("Foto de perfil actualizada correctamente");
-      } else {
-        toast("Error al actualizar avatar", false);
-      }
+      } else toast("Error al actualizar avatar", false);
     } catch (err) {
-      console.error("Error subiendo avatar:", err);
+      console.error(err);
       toast("Error al subir avatar", false);
     }
   };
   input.click();
-});
+}
 
-// Subir nuevo banner
-document.querySelector(".profile-banner img")?.addEventListener("click", () => {
+async function handleBannerChange() {
   const input = document.createElement("input");
   input.type = "file";
   input.accept = "image/*";
   input.onchange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const fd = new FormData();
     fd.append("banner", file);
 
@@ -279,26 +277,20 @@ document.querySelector(".profile-banner img")?.addEventListener("click", () => {
         body: fd,
       });
       const data = await res.json();
-
       if (data.status === "success") {
-        // 🔄 Refrescar desde el backend para garantizar actualización
-        const refreshedRes = await fetch("/api/users/me", {
+        const refreshed = await fetch("/api/users/me", {
           headers: { Authorization: "Bearer " + localStorage.getItem("token") },
         });
-        const refreshedData = await refreshedRes.json();
-
+        const refreshedData = await refreshed.json();
         state.me = refreshedData.user || refreshedData;
         localStorage.setItem("user", JSON.stringify(state.me));
-
-        renderProfile();
+        renderProfile(true);
         toast("Portada actualizada correctamente");
-      } else {
-        toast("Error al actualizar portada", false);
-      }
+      } else toast("Error al actualizar portada", false);
     } catch (err) {
-      console.error("Error subiendo portada:", err);
+      console.error(err);
       toast("Error al subir portada", false);
     }
   };
   input.click();
-});
+}

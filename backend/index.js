@@ -40,11 +40,13 @@ const AuthRoutes = require("./routes/auth");
 const UserRoutes = require("./routes/user");
 const PublicationRoutes = require("./routes/publication");
 const FollowRoutes = require("./routes/follow");
+const visionRoutes = require('./routes/vision');
 
 app.use("/api", AuthRoutes);
 app.use("/api", UserRoutes);
 app.use("/api", PublicationRoutes);
 app.use("/api", FollowRoutes);
+app.use('/vision', visionRoutes);
 
 // ================= FRONTEND =================
 // Servir archivos estáticos

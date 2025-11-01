@@ -1,4 +1,3 @@
-// models/publication.js
 const mongoose = require("mongoose");
 
 const PublicationSchema = new mongoose.Schema(
@@ -8,10 +7,12 @@ const PublicationSchema = new mongoose.Schema(
       url: { type: String, default: "" },
       public_id: { type: String, default: "" },
     },
-    // Relación correcta con el modelo User
+    descripcion_ia: { type: String, trim: true, default: "" },
+    emocion_ia: { type: String, trim: true, default: "" },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }
 );
+
 
 module.exports = mongoose.model("Publication", PublicationSchema);

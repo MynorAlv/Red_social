@@ -10,3 +10,4 @@ build/
 # sistema
 .DS_Store
 *.log
+config/vision-key.json

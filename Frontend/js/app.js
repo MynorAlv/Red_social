@@ -31,23 +31,44 @@ async function route() {
 
   hideAll();
   const r = location.hash || "#/feed";
+
   if (!state.me) {
     show("view-auth");
     return;
   }
 
-  switch (r) {
-    case "#/feed": show("view-feed"); await loadFeed(); break;
-    case "#/users": show("view-users"); await loadUsers(); break;
-    case "#/profile":
-  show("view-profile");
-  await Promise.all([loadFeed(), loadMyPosts()]);
-  updateProfileHeader(); // 🔥
-  break;
+  // ✅ Nuevo: perfil público (#/profile/:id) sin modificar el switch
+  if (r.startsWith("#/profile/")) {
+    const userId = r.split("/")[2];
+    show("view-profile");
+    await loadPublicProfile(userId); // Debe existir en tu users.js
+    return; // Evita que caiga al switch
+  }
 
-    default: show("view-feed"); await loadFeed(); break;
+  switch (r) {
+    case "#/feed":
+      show("view-feed");
+      await loadFeed();
+      break;
+
+    case "#/users":
+      show("view-users");
+      await loadUsers();
+      break;
+
+    case "#/profile":
+      show("view-profile");
+      await Promise.all([loadFeed(), loadMyPosts()]);
+      updateProfileHeader(); // se mantiene tal cual
+      break;
+
+    default:
+      show("view-feed");
+      await loadFeed();
+      break;
   }
 }
+
 
 window.addEventListener("hashchange", route);
 window.addEventListener("DOMContentLoaded", () => { setNav(); route(); });

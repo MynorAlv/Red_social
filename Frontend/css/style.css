@@ -716,3 +716,46 @@ textarea#post-text {
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
+/* === Detección IA (Google Vision) === */
+.ai-detect {
+  margin: 8px 15px 0;
+  padding: 8px 12px;
+  background: #f3f4f6;
+  border-left: 4px solid #2563eb;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #1e293b;
+  font-weight: 500;
+  font-family: system-ui, sans-serif;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.ai-detect::before {
+  content: "";
+}
+.ai-emotion {
+  margin: 8px 15px 0;
+  padding: 8px 12px;
+  background: #fff4e6;
+  border-left: 4px solid #f97316;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #7c2d12;
+  font-weight: 500;
+}
+.ai-emotion::before {
+  content: "";
+}
+.ia-label, .ia-emocion {
+  font-size: 0.9rem;
+  margin: 4px 0;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+.ia-label {
+  background: #e7f0ff;
+  border-left: 4px solid #3b82f6;
+}
+.ia-emocion {
+  background: #fff4e5;
+  border-left: 4px solid #f59e0b;
+}

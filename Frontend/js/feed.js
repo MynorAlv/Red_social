@@ -51,9 +51,12 @@ function renderFeed() {
       ? p.image
       : null;
 
+    const descripcionIA = p.descripcion_ia || ""; // 🧠 detección IA desde backend
+
     // Avatar del usuario
     let avatarUrl =
-      p.user?.image?.url || p.user?.image ||
+      p.user?.image?.url ||
+      p.user?.image ||
       "https://cdn-icons-png.flaticon.com/512/1946/1946429.png";
 
     const card = document.createElement("div");
@@ -74,6 +77,17 @@ function renderFeed() {
                  onerror="this.style.display='none'">`
           : ""
       }
+      ${
+  p.descripcion_ia
+    ? `<div class="ai-detect">Detectado: ${p.descripcion_ia}</div>`
+    : ""
+}
+${
+  p.emocion_ia
+    ? `<div class="ai-emotion">Emoción: ${p.emocion_ia}</div>`
+    : ""
+}
+
       ${text ? `<div class="post-text">${text}</div>` : ""}
       <div class="post-actions">
         <span>❤️ Me gusta</span>
@@ -84,9 +98,10 @@ function renderFeed() {
     wrap.appendChild(card);
   }
 
-  // Actualizar el avatar del formulario superior (usuario actual)
+  // Actualizar avatar del usuario actual
   updateCurrentUserAvatarInFeed();
 }
+
 
 // === PUBLICAR NUEVO POST ===
 $("form-post")?.addEventListener("submit", async (e) => {
