@@ -759,3 +759,54 @@ textarea#post-text {
   background: #fff4e5;
   border-left: 4px solid #f59e0b;
 }
+/* === Menú de 3 puntos === */
+.post-menu {
+  position: relative;
+  margin-left: auto;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #555;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.menu-btn:hover {
+  background: #f3f4f6;
+}
+
+.menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.menu-dropdown.hidden {
+  display: none;
+}
+
+.menu-dropdown button {
+  background: none;
+  border: none;
+  padding: 8px 14px;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  color: #444;
+}
+
+.menu-dropdown button:hover {
+  background: #f3f4f6;
+  color: #000;
+}

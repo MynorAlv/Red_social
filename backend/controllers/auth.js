@@ -2,6 +2,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const { createToken } = require("../services/jwt");
+const axios = require("axios");
 
 /**
  * Limpia y normaliza strings.
@@ -66,9 +67,14 @@ exports.register = async (req, res) => {
 /**
  * Login local por email y contraseña.
  */
+/**
+ * Login local por email y contraseña con validación reCAPTCHA v2.
+ */
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body || {};
+    const { email, password, captcha } = req.body || {};
+
+    // Validar campos
     if (!email || !password) {
       return res.status(400).json({
         status: "error",
@@ -76,21 +82,44 @@ exports.login = async (req, res) => {
       });
     }
 
+    // Verificar reCAPTCHA
+    if (!captcha) {
+      return res.status(400).json({
+        status: "error",
+        message: "Debes completar el reCAPTCHA antes de iniciar sesión",
+      });
+    }
+
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captcha}`;
+    const { data } = await axios.post(verifyURL);
+
+    if (!data.success) {
+      return res.status(400).json({
+        status: "error",
+        message: "Verificación reCAPTCHA fallida",
+      });
+    }
+
+    // Buscar usuario
     const user = await User.findOne({ email: norm(email).toLowerCase() });
     if (!user) {
-      return res
-        .status(401)
-        .json({ status: "error", message: "Correo no registrado" });
+      return res.status(401).json({
+        status: "error",
+        message: "Correo no registrado",
+      });
     }
 
+    // Validar contraseña
     const ok = await bcrypt.compare(password, user.password);
     if (!ok) {
-      return res
-        .status(401)
-        .json({ status: "error", message: "Contraseña incorrecta" });
+      return res.status(401).json({
+        status: "error",
+        message: "Contraseña incorrecta",
+      });
     }
 
-    // 🔥 Genera token con id consistente
+    // Generar token
     const token = createToken(user);
     const { password: _, ...userSafe } = user.toObject();
 
@@ -109,6 +138,7 @@ exports.login = async (req, res) => {
     });
   }
 };
+
 
 /**
  * Perfil del usuario autenticado (requiere token).

@@ -11,24 +11,22 @@ const connection = require("./database/connection");
 connection();
 
 const app = express();
-const puerto = 3900;
+const puerto = process.env.PORT || 3900;
 
-// Middleware CORS
-
+// ================= CONFIGURACIÓN CORS =================
 app.use(cors({
-  origin: "*", // Permite cualquier origen (ajusta más adelante si deseas)
+  origin: ["http://localhost:3900", "http://127.0.0.1:3900", "*"], 
   methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-
-// Body-parser
-app.use(express.json());
+// ================= MIDDLEWARES =================
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// Session + Passport
+// ================= SESIÓN Y PASSPORT =================
 app.use(session({
-  secret: "claveSecretaParaSession",
+  secret: process.env.SESSION_SECRET || "claveSecretaParaSession",
   resave: false,
   saveUninitialized: false
 }));
@@ -40,36 +38,29 @@ const AuthRoutes = require("./routes/auth");
 const UserRoutes = require("./routes/user");
 const PublicationRoutes = require("./routes/publication");
 const FollowRoutes = require("./routes/follow");
-const visionRoutes = require('./routes/vision');
+const visionRoutes = require("./routes/vision");
 
 app.use("/api", AuthRoutes);
 app.use("/api", UserRoutes);
 app.use("/api", PublicationRoutes);
 app.use("/api", FollowRoutes);
-app.use('/vision', visionRoutes);
+app.use("/vision", visionRoutes);
 
 // ================= FRONTEND =================
-// Servir archivos estáticos
-app.use(express.static(path.join(__dirname, "../frontend")));
+const frontendPath = path.join(__dirname, "../frontend");
+app.use(express.static(frontendPath));
 
-// Ruta raíz → Login
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend", "index.html"));
+// Redirigir todas las rutas desconocidas al frontend (SPA)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
 });
 
-// Ruta directa a register.html
-app.get("/register.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend", "register.html"));
-});
-
-// Servir carpeta de uploads
-
+// ================= UPLOADS =================
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-
 // ================= INICIAR SERVIDOR =================
-app.listen(puerto, () => {
-  console.log(`✅ Servidor corriendo en: http://localhost:${puerto}`);
+app.listen(puerto, "0.0.0.0", () => {
+  const host = process.env.HOST || "localhost";
+  console.log(`Servidor corriendo en: http://${host}:${puerto}`);
   console.log("JWT en uso:", process.env.JWT_SECRET);
-
 });

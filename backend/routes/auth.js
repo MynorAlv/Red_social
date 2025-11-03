@@ -16,15 +16,15 @@ router.get("/auth/google", passport.authenticate("google", { scope: ["profile", 
 
 router.get(
   "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/index.html#/auth", session: false }),
+  passport.authenticate("google", { failureRedirect: process.env.FRONTEND_URL + "/#/auth", session: false }),
   (req, res) => {
     try {
       const token = jwt.createToken(req.user);
-      // Redirige al frontend principal con token
-      res.redirect(`/index.html#token=${token}`);
+      // Redirigir a frontend con token en la URL
+      res.redirect(`${process.env.FRONTEND_URL}/#/feed?token=${token}`);
     } catch (error) {
       console.error("Error al crear token de Google:", error);
-      res.redirect("/index.html#/auth?error=token");
+      res.redirect(`${process.env.FRONTEND_URL}/#/auth?error=token`);
     }
   }
 );

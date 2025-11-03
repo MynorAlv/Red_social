@@ -104,7 +104,7 @@ async function loadMyPosts() {
 }
 
 // ===============================
-// RENDERIZAR PERFIL (GENÉRICO)
+// RENDERIZAR PERFIL 
 // ===============================
 function renderProfile(isOwnProfile = false, user = state.me, posts = state.myPosts) {
   const nameEl = $("profile-name");
@@ -164,6 +164,7 @@ function renderProfile(isOwnProfile = false, user = state.me, posts = state.myPo
 
   const card = document.createElement("div");
   card.className = "post-card";
+
   card.innerHTML = `
     <div class="post-header">
       <img src="${avatarUrl}" alt="avatar">
@@ -171,27 +172,40 @@ function renderProfile(isOwnProfile = false, user = state.me, posts = state.myPo
         <div class="post-user">${user.nick || user.name}</div>
         <div class="post-date">${when}</div>
       </div>
+      ${
+        isOwnProfile
+          ? `
+          <div class="post-menu">
+            <button class="menu-btn" onclick="toggleMenu(this)">⋮</button>
+            <div class="menu-dropdown hidden">
+              <button onclick="deletePost('${p._id}')">Eliminar publicación</button>
+            </div>
+          </div>
+          `
+          : ""
+      }
     </div>
+
     ${imgUrl ? `<img src="${imgUrl}" class="post-image">` : ""}
+
     ${
       p.descripcion_ia
         ? `<div class="ia-label"><strong>Detectado:</strong> ${p.descripcion_ia}</div>`
         : ""
     }
-    ${
-      p.emocion_ia
-        ? `<div class="ia-emocion"><strong>Emoción:</strong> ${p.emocion_ia}</div>`
-        : ""
-    }
+
     ${text ? `<div class="post-text">${text}</div>` : ""}
+
     <div class="post-actions">
       <span>❤️ Me gusta</span>
       <span>💬 Comentar</span>
       <span>↗️ Compartir</span>
     </div>
   `;
+
   wrap.appendChild(card);
 }
+
 
 }
 
@@ -293,4 +307,44 @@ async function handleBannerChange() {
     }
   };
   input.click();
+}
+
+// === MENÚ DE 3 PUNTOS ===
+function toggleMenu(btn) {
+  const menu = btn.nextElementSibling;
+  menu.classList.toggle("hidden");
+
+  document.querySelectorAll(".menu-dropdown").forEach((m) => {
+    if (m !== menu) m.classList.add("hidden");
+  });
+}
+
+// Cerrar menú si se hace clic fuera
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".post-menu")) {
+    document.querySelectorAll(".menu-dropdown").forEach((m) => m.classList.add("hidden"));
+  }
+});
+
+// === ELIMINAR PUBLICACIÓN ===
+async function deletePost(id) {
+  if (!confirm("¿Seguro que deseas eliminar esta publicación?")) return;
+
+  try {
+    const res = await fetch(`${API_PUB.list}/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+    });
+
+    const data = await res.json();
+    if (data.status === "success") {
+      toast("Publicación eliminada correctamente");
+      await loadMyPosts();
+    } else {
+      toast("Error al eliminar publicación", false);
+    }
+  } catch (err) {
+    console.error("Error eliminando publicación:", err);
+    toast("Error al eliminar publicación", false);
+  }
 }

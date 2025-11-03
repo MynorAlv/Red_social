@@ -19,17 +19,27 @@
       <p class="muted">Inicia sesión para continuar</p>
 
       <form id="form-login" class="form">
-        <label>Email
-          <input id="login-email" type="email" placeholder="tu@email.com" required />
-        </label>
-        <label for="login-pass">Contraseña</label>
-        <div class="input-affix">
-        <input type="password" id="login-pass" placeholder="••••••" required />
-        <span class="toggle" onclick="togglePassword(this)">Ver</span>
-        </div>
+  <label>Email
+    <input id="login-email" type="email" placeholder="tu@email.com" required />
+  </label>
 
-        <button id="btn-login" class="btn" type="submit">Entrar</button>
-      </form>
+  <label for="login-pass">Contraseña</label>
+  <div class="input-affix">
+    <input type="password" id="login-pass" placeholder="••••••" required />
+    <span class="toggle" onclick="togglePassword(this)">Ver</span>
+  </div>
+
+  <!-- reCAPTCHA v2 -->
+  <div class="g-recaptcha"
+       data-sitekey="6LcAKwAsAAAAAE-95NmtBjxH94u8mqrmkYh9ODtC"
+       style="margin-top:10px; margin-bottom:10px;"></div>
+
+  <button id="btn-login" class="btn" type="submit">Entrar</button>
+</form>
+
+<!-- Script oficial de Google -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
 
       <!-- BOTÓN GOOGLE -->
       <div style="text-align: center; margin-top: 1rem;">

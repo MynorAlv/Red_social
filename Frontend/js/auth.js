@@ -2,19 +2,31 @@
 let token = localStorage.getItem("token") || "";
 const state = { me: null, feed: [], users: [], myPosts: [] };
 
-// === Capturar token de Google ===
+// === Capturar token de Google (nuevo formato ===)
 (function handleTokenFromGoogle() {
   const hash = location.hash;
-  if (hash.startsWith("#token=")) {
-    const tokenFromUrl = hash.replace("#token=", "");
+  if (hash.includes("?token=")) {
+    // Extraer token del hash URL
+    const tokenFromUrl = new URLSearchParams(hash.split("?")[1]).get("token");
+
     if (tokenFromUrl) {
       localStorage.setItem("token", tokenFromUrl);
       token = tokenFromUrl;
-      location.hash = "#/feed";
-      setTimeout(route, 50);
+
+      console.log("✅ Sesión iniciada con Google");
+      toast("Sesión iniciada con Google");
+
+      // Limpiar URL (para no mostrar el token)
+      const cleanHash = hash.split("?")[0];
+      history.replaceState(null, "", cleanHash);
+
+      // Cargar datos del usuario y redirigir al feed
+      loadSessionLocal();
+      setTimeout(route, 100);
     }
   }
 })();
+
 
 function saveSession(user) {
   state.me = user;
@@ -59,33 +71,56 @@ function logout() {
 }
 
 // === FORMULARIO LOGIN ===
-const btnLogin = $("btn-login");
+$// === FORMULARIO LOGIN ===
 $("form-login")?.addEventListener("submit", async (e) => {
   e.preventDefault();
+
+  // Referencias de campos
   const email = $("login-email")?.value.trim();
   const password = $("login-pass")?.value.trim();
-  if (!email || !password) return;
+  const btnLogin = $("btn-login"); // ✅ mover aquí
+  const captchaResponse = grecaptcha.getResponse(); // token del captcha
+
+  if (!email || !password) {
+    toast("Debes llenar todos los campos", false);
+    return;
+  }
+
+  if (!captchaResponse) {
+    toast("Por favor, completa el reCAPTCHA.", false);
+    return;
+  }
+
   try {
-    if (btnLogin) {
-      btnLogin.disabled = true;
-      btnLogin.textContent = "Entrando...";
-    }
-    const data = await apiPost(API_AUTH.login, { email, password });
+    btnLogin.disabled = true;
+    btnLogin.textContent = "Entrando...";
+
+    // Enviar datos con captcha incluido
+    const data = await apiPost(API_AUTH.login, {
+      email,
+      password,
+      captcha: captchaResponse,
+    });
+
     token = data.token;
     localStorage.setItem("token", token);
     saveSession(data.user);
     toast("Sesión iniciada correctamente");
     location.hash = "#/feed";
     route();
+
+    // Limpiar captcha
+    grecaptcha.reset();
   } catch (err) {
+    console.error("Error login:", err);
     toast("Error al iniciar sesión: credenciales inválidas o servidor no disponible.", false);
   } finally {
-    if (btnLogin) {
-      btnLogin.disabled = false;
-      btnLogin.textContent = "Entrar";
-    }
+    btnLogin.disabled = false;
+    btnLogin.textContent = "Entrar";
   }
 });
+
+
 // =================== MOSTRAR / OCULTAR CONTRASEÑA ===================
 function togglePassword(el) {
   // Obtener el input del mismo label

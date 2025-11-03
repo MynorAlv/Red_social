@@ -1,6 +1,13 @@
 // =================== CONFIG ===================
-const API_BASE = "http://localhost:3900/api";
+// Detectar si estamos en entorno local o en producción (AWS)
+const isLocal = location.hostname === "localhost" || location.hostname.startsWith("127.");
+
+const API_BASE = isLocal
+  ? "http://localhost:3900/api"
+  : "http://" + location.hostname + ":3900/api"; // Usa IP pública o dominio en AWS
+
 const API = API_BASE;
+
 
 const API_PUB = {
   list: `${API}/publications`,

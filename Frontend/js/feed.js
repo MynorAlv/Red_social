@@ -62,39 +62,45 @@ function renderFeed() {
     const card = document.createElement("div");
     card.className = "post-card";
 
-    card.innerHTML = `
-      <div class="post-header">
-        <img src="${avatarUrl}" alt="avatar"
-             onerror="this.src='https://cdn-icons-png.flaticon.com/512/1946/1946429.png'">
-        <div>
-          <div class="post-user">${author}</div>
-          <div class="post-date">${when}</div>
-        </div>
-      </div>
-      ${
-        imgUrl
-          ? `<img src="${imgUrl}" class="post-image" onclick="showModal('${imgUrl}')" 
-                 onerror="this.style.display='none'">`
-          : ""
-      }
-      ${
-  p.descripcion_ia
-    ? `<div class="ai-detect">Detectado: ${p.descripcion_ia}</div>`
-    : ""
-}
-${
-  p.emocion_ia
-    ? `<div class="ai-emotion">Emoción: ${p.emocion_ia}</div>`
-    : ""
-}
+        // Determinar si el usuario actual es el dueño de la publicación
+        const meId = state.me?._id || state.me?.id;
+        const pubUserId = p.user?._id || p.user?.id;
+        const isOwner = meId && pubUserId && meId.toString() === pubUserId.toString();
 
-      ${text ? `<div class="post-text">${text}</div>` : ""}
-      <div class="post-actions">
-        <span>❤️ Me gusta</span>
-        <span>💬 Comentar</span>
-        <span>↗️ Compartir</span>
-      </div>
-    `;
+card.innerHTML = `
+  <div class="post-header">
+    <img src="${avatarUrl}" alt="avatar"
+         onerror="this.src='https://cdn-icons-png.flaticon.com/512/1946/1946429.png'">
+    <div class="post-meta">
+      <div class="post-user">${author}</div>
+      <div class="post-date">${when}</div>
+    </div>
+    ${isOwner ? `
+  <div class="post-menu">
+    <button class="menu-btn" onclick="toggleMenu(this)">⋮</button>
+    <div class="menu-dropdown hidden">
+      <button onclick="deletePost('${p._id}')">Eliminar publicación</button>
+    </div>
+  </div>`
+  : ""}
+
+  </div>
+  ${
+    imgUrl
+      ? `<img src="${imgUrl}" class="post-image" onclick="showModal('${imgUrl}')" 
+             onerror="this.style.display='none'">`
+      : ""
+  }
+  ${p.descripcion_ia ? `<div class="ai-detect">Detectado: ${p.descripcion_ia}</div>` : ""}
+  ${text ? `<div class="post-text">${text}</div>` : ""}
+  <div class="post-actions">
+    <span>❤️ Me gusta</span>
+    <span>💬 Comentar</span>
+    <span>↗️ Compartir</span>
+  </div>
+`;
+
+
     wrap.appendChild(card);
   }
 
@@ -170,5 +176,43 @@ function updateCurrentUserAvatarInFeed() {
   };
 }
 
-// Llamar también cuando se cambie la foto de perfil
-document.addEventListener("avatarUpdated", updateCurrentUserAvatarInFeed);
+// === MENÚ DE 3 PUNTOS ===
+function toggleMenu(btn) {
+  const menu = btn.nextElementSibling;
+  menu.classList.toggle("hidden");
+
+  // Cerrar otros menús abiertos
+  document.querySelectorAll(".menu-dropdown").forEach((m) => {
+    if (m !== menu) m.classList.add("hidden");
+  });
+}
+
+// Cerrar el menú si se hace clic fuera
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".post-menu")) {
+    document.querySelectorAll(".menu-dropdown").forEach((m) => m.classList.add("hidden"));
+  }
+});
+
+// === ELIMINAR PUBLICACIÓN ===
+async function deletePost(id) {
+  if (!confirm("¿Seguro que deseas eliminar esta publicación?")) return;
+
+  try {
+    const res = await fetch(`${API_PUB.list}/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+    });
+
+    const data = await res.json();
+    if (data.status === "success") {
+      toast("Publicación eliminada correctamente");
+      await loadFeed();
+    } else {
+      toast("Error al eliminar publicación", false);
+    }
+  } catch (err) {
+    console.error("Error eliminando publicación:", err);
+    toast("Error al eliminar publicación", false);
+  }
+}
