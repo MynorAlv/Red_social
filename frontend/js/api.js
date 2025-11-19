@@ -4,7 +4,7 @@ const isLocal = location.hostname === "localhost" || location.hostname.startsWit
 
 const API_BASE = isLocal
   ? "http://localhost:3900/api"
-  : "http://" + location.hostname + ":3900/api"; // Usa IP pública o dominio en AWS
+  : "http://3.149.33.119:3900/api"; 
 
 const API = API_BASE;
 

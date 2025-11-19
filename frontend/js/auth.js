@@ -1,8 +1,7 @@
-// =================== AUTH ===================
 let token = localStorage.getItem("token") || "";
 const state = { me: null, feed: [], users: [], myPosts: [] };
 
-// === Capturar token de Google (nuevo formato ===)
+// === Capturar token de Google ===
 (function handleTokenFromGoogle() {
   const hash = location.hash;
   if (hash.includes("?token=")) {
@@ -26,7 +25,6 @@ const state = { me: null, feed: [], users: [], myPosts: [] };
     }
   }
 })();
-
 
 function saveSession(user) {
   state.me = user;
@@ -71,7 +69,6 @@ function logout() {
 }
 
 // === FORMULARIO LOGIN ===
-$// === FORMULARIO LOGIN ===
 $("form-login")?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -79,38 +76,47 @@ $("form-login")?.addEventListener("submit", async (e) => {
   const email = $("login-email")?.value.trim();
   const password = $("login-pass")?.value.trim();
   const btnLogin = $("btn-login"); // ✅ mover aquí
-  const captchaResponse = grecaptcha.getResponse(); // token del captcha
 
+  // Eliminar validación de reCAPTCHA para pruebas
+  // const captchaResponse = grecaptcha.getResponse(); // token del captcha
+
+  // Validación de campos
   if (!email || !password) {
     toast("Debes llenar todos los campos", false);
     return;
   }
 
-  if (!captchaResponse) {
-    toast("Por favor, completa el reCAPTCHA.", false);
-    return;
-  }
+  // Si no usamos captcha, eliminamos la validación del captcha:
+  // if (!captchaResponse) {
+  //   toast("Por favor, completa el reCAPTCHA.", false);
+  //   return;
+  // }
 
   try {
     btnLogin.disabled = true;
     btnLogin.textContent = "Entrando...";
 
-    // Enviar datos con captcha incluido
+    // Enviar datos sin captcha (ya que lo hemos deshabilitado temporalmente)
     const data = await apiPost(API_AUTH.login, {
       email,
       password,
-      captcha: captchaResponse,
+      // captcha: captchaResponse, // Eliminar esta línea si no usas reCAPTCHA
     });
 
+    // Almacenamos el token y la sesión
     token = data.token;
     localStorage.setItem("token", token);
     saveSession(data.user);
+
+    console.log("Login exitoso:", data);
     toast("Sesión iniciada correctamente");
+
+    // Redirigir al feed
     location.hash = "#/feed";
     route();
 
-    // Limpiar captcha
-    grecaptcha.reset();
+    // Limpiar captcha (aunque no se usó)
+    // grecaptcha.reset();
   } catch (err) {
     console.error("Error login:", err);
     toast("Error al iniciar sesión: credenciales inválidas o servidor no disponible.", false);
@@ -119,7 +125,6 @@ $("form-login")?.addEventListener("submit", async (e) => {
     btnLogin.textContent = "Entrar";
   }
 });
-
 
 // =================== MOSTRAR / OCULTAR CONTRASEÑA ===================
 function togglePassword(el) {

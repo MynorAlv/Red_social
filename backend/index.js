@@ -15,7 +15,7 @@ const puerto = process.env.PORT || 3900;
 
 // ================= CONFIGURACIÓN CORS =================
 app.use(cors({
-  origin: ["http://localhost:3900", "http://127.0.0.1:3900", "*"], 
+  origin: ["http://localhost:3900", "http://127.0.0.1:3900", "http://3.149.33.119"], 
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));

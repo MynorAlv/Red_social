@@ -1,4 +1,3 @@
-// controllers/auth.js
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const { createToken } = require("../services/jwt");
@@ -67,12 +66,9 @@ exports.register = async (req, res) => {
 /**
  * Login local por email y contraseña.
  */
-/**
- * Login local por email y contraseña con validación reCAPTCHA v2.
- */
 exports.login = async (req, res) => {
   try {
-    const { email, password, captcha } = req.body || {};
+    const { email, password } = req.body || {};
 
     // Validar campos
     if (!email || !password) {
@@ -82,26 +78,19 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Verificar reCAPTCHA
-    if (!captcha) {
-      return res.status(400).json({
-        status: "error",
-        message: "Debes completar el reCAPTCHA antes de iniciar sesión",
-      });
-    }
+    // Eliminar validación de reCAPTCHA para pruebas
+    // === Desactivación temporal de reCAPTCHA ===
+    // const { captcha } = req.body;
+    // if (!captcha) {
+    //   return res.status(400).json({
+    //     status: "error",
+    //     message: "Debes completar el reCAPTCHA antes de iniciar sesión",
+    //   });
+    // }
 
-    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
-    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captcha}`;
-    const { data } = await axios.post(verifyURL);
+    // === Si desactivamos reCAPTCHA, solo hacemos lo siguiente ===
 
-    if (!data.success) {
-      return res.status(400).json({
-        status: "error",
-        message: "Verificación reCAPTCHA fallida",
-      });
-    }
-
-    // Buscar usuario
+    // Buscar usuario por email
     const user = await User.findOne({ email: norm(email).toLowerCase() });
     if (!user) {
       return res.status(401).json({
@@ -119,7 +108,7 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Generar token
+    // Generar token JWT
     const token = createToken(user);
     const { password: _, ...userSafe } = user.toObject();
 
@@ -138,7 +127,6 @@ exports.login = async (req, res) => {
     });
   }
 };
-
 
 /**
  * Perfil del usuario autenticado (requiere token).
